@@ -19,6 +19,7 @@ using namespace std;
 
 #include "Graphical.h"
 #include "Objects.h"
+#include "Scene.h"
 #include "Ray.h"
 #include "Renderer.h"
 

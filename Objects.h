@@ -83,6 +83,13 @@ struct Color_Float {
     float b;
     float g;
     float a;
+
+    void operator*=(const float& rhs) {
+        r *= rhs;
+        b *= rhs;
+        g *= rhs;
+        a *= rhs;
+    }
 };
 
 struct Objects_Ray {
@@ -104,3 +111,4 @@ struct Objects_Plane {
     Objects_Vector normalVector;
     float d;
 };
+

@@ -21,6 +21,48 @@ void renderer_lensRender(uint32_t * pixelBuffer, unsigned int windowWidth, unsig
     Objects_Vector camera = {distance, 0, 0};
     Objects_Vector viewpoint = camera;
 
+	// Current scene data for testing purposes
+		Sphere_SceneObjectData Object1 = { {{2.5,-0.6,0}, 0.3}, 0.3, {1.0,0.0,0.0} };
+		Sphere_SceneObjectData Object2 = { {{-1,0,0}, 0.3}, 0.3, {1.0,0.0,0.0} };
+		Sphere_SceneObjectData Object3 = { {{-4.5,1.2,0}, 0.3}, 0.3, {1.0,0.0,0.0} };
+		TileFloor_SceneObjectData Object4 = { {{0,0,1}, -0.3}, 0.2, {0.95,0.95,0.95} };
+		Plane_SceneObjectData Object5 = { {{0,0,1}, -0.31}, 0.1, {0.6,0.6,0.6} };
+		Plane_SceneObjectData Object6 = { {{0,0,-1}, -1.2}, 0.1, {0.9,0.9,0.9} };
+		Plane_SceneObjectData Object7 = { {{-1,0,0}, -6}, 0.1, {0.9,0.9,0.9} };
+		Plane_SceneObjectData Object8 = { {{1,0,0}, -4.8}, 0.1, {0.9,0.9,0.9} };
+		Plane_SceneObjectData Object9 = { {{0,1,0}, -1.5}, 0.1, {0.9,0.9,0.9} };
+		Plane_SceneObjectData Object10 = { {{0,-1,0}, -1.5}, 0.1, {0.9,0.9,0.9} };
+
+		Scene_ObjectType objectsType[] = {
+			sphere_SceneObject,
+			sphere_SceneObject,
+			sphere_SceneObject,
+			tileFloor_SceneObject,
+			plane_SceneObject,
+			plane_SceneObject,
+			plane_SceneObject,
+			plane_SceneObject,
+			plane_SceneObject,
+			plane_SceneObject
+		};
+		void * objectsData[] = {
+			&Object1,
+			&Object2,
+			&Object3,
+			&Object4,
+			&Object5,
+			&Object6,
+			&Object7,
+			&Object8,
+			&Object9,
+			&Object10
+		};
+		Scene_Descriptor scene = {
+			10,
+			objectsType,
+			objectsData
+		};
+
 	for (pixelY = 0; pixelY < windowHeight; pixelY++) {
 		for (pixelX = 0; pixelX < windowWidth; pixelX++) {
 
@@ -122,7 +164,6 @@ void renderer_lensRender(uint32_t * pixelBuffer, unsigned int windowWidth, unsig
 				//calculations for xHoriz Plane
 				lensVector = normLensPlane - newPoint;
 
-				//t = (lensVector.y*(sphere1Intersect[4]-normLensPlane.y)+lensVector.z*(sphere1Intersect[5]-normLensPlane.z))/(lensVector.y*lensVector.y+lensVector.z*lensVector.z);
 				t = lensVector.dot(sphere1Intersect - normLensPlane)/(lensVector.dot(lensVector));
 				horizPlane = normLensPlane + lensVector * t;
 
@@ -149,13 +190,8 @@ void renderer_lensRender(uint32_t * pixelBuffer, unsigned int windowWidth, unsig
 				newPoint = horizPlane + (newPoint - horizPlane) * (newYDelta / YDelta1);
 				ray.createFromPoints(&newPoint, &sphere1Intersect);
 
-				//float checkPlane[4] = { 1,0,0,5 };//A plane that divides what is infront of the camera and what is behind; used to ensure behind objects are not counted.
-				//float origin[3] = { 0,0,0 };
-				Objects_Plane checkPlane = { {1,0,0}, 5};
-				Objects_Vector origin = { 0, 0, 0 };
-
 				Color RGBAColors;
-				traceRay(&RGBAColors, &ray, &viewpoint, 3, &checkPlane, &origin, -1, pixelX, pixelY);
+				traceRay(&ray, 3, &RGBAColors, &scene, -1);
 
 				RGBATotalColors += RGBAColors;
 			}
