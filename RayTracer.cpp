@@ -14,6 +14,8 @@
 #include <cfloat>
 #include <cctype>
 #include <cstring>
+#include <thread>
+#include <mutex>
 
 using namespace std;
 
@@ -64,15 +66,17 @@ int main(int argc, char ** args) {
 			&Object9,
 			&Object10
 		};
+        RTTypesVector light = { 2,1,.75 };
 		Scene_Descriptor scene = {
 			10,
 			objectsType,
-			objectsData
+			objectsData,
+            &light
 		};
 	// END TEST SCENE OBJECT
 
     uint32_t * buffer = renderer_renderScene(&scene, graphical_data.windowWidth, graphical_data.windowHeight);
-    postProcessing_3x3GuassianBlur(buffer, graphical_data.windowWidth, graphical_data.windowHeight);
+    //postProcessing_3x3GuassianBlur(buffer, graphical_data.windowWidth, graphical_data.windowHeight);
     graphical_display(buffer);
 
     graphical_wait();

@@ -13,6 +13,7 @@ struct Scene_Descriptor {
     int nObjects;
     Scene_ObjectType * objectsType;
     void ** objectsData;
+    RTTypesVector * light;
 
     bool intersectRay(RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal, Color_Float * returnColor, float * returnReflection, int ignoreIndex, int * returnIndex) {
         int index;

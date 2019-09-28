@@ -87,7 +87,6 @@ void refractRay(RTTypesVector * ray, RTTypesVector * normal, float indexRatio, R
 }
 
 void traceRay(RTTypesRay * ray, int recursionLevel, Color * returnColor, Scene_Descriptor * scene, int ignoreObject) {
-	RTTypesVector light = { 2,1,.75 };
 	*returnColor = {200, 200, 255, 0};
 
 	RTTypesVector point;
@@ -102,7 +101,7 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color * returnColor, Scene_D
 		float scaleColor = 50;
 
 		RTTypesRay pathToLight;
-		pathToLight.createFromPoints(&point, &light);
+		pathToLight.createFromPoints(&point, scene -> light);
 
 		RTTypesVector lightIntersect;
 		RTTypesVector unused2;
@@ -111,7 +110,7 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color * returnColor, Scene_D
 		int unused5;
 
 		bool clearPathToLight = scene -> intersectRay(&pathToLight, &lightIntersect, &unused2, &unused3, &unused4, objectIndex, &unused5);
-		if (clearPathToLight && pathToLight.point.dist(lightIntersect) > pathToLight.point.dist(light)) {
+		if (clearPathToLight && pathToLight.point.dist(lightIntersect) > pathToLight.point.dist(*scene -> light)) {
 			clearPathToLight = false;
 		}
 		if (!clearPathToLight) {
@@ -135,10 +134,10 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color * returnColor, Scene_D
 		}
 
 		if (!clearPathToLight) {
-			RTTypesPlane lightPlane = {light, light.dot(light)};
+			RTTypesPlane lightPlane = { *scene -> light, (scene -> light) -> dot(*scene -> light) };
 			RTTypesVector lightPlaneIntersect;
 			intersectPlaneRay(&lightPlaneIntersect, &lightPlane, &reflectedRay);
-			float distance = light.dist(lightPlaneIntersect);
+			float distance = scene -> light -> dist(lightPlaneIntersect);
 			if (distance < 1) {
 				float brightness = sqrt(1 - distance * distance);
 				color.r += (255 - color.r) * brightness;
