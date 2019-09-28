@@ -88,6 +88,55 @@ struct Color {
     }
 };
 
+struct Color_Int {
+    int r;
+    int g;
+    int b;
+    int a;
+
+    Color_Int operator+(const Color_Int& rhs) {
+        Color_Int returnValue = {
+            r + rhs.r,
+            g + rhs.g,
+            b + rhs.b,
+            a + rhs.a
+        };
+        return returnValue;
+    }
+    Color_Int operator*(const int& rhs) {
+        Color_Int returnValue = {
+            r * rhs,
+            g * rhs,
+            b * rhs,
+            a * rhs
+        };
+        return returnValue;
+    }
+    Color_Int operator/(const int& rhs) {
+        Color_Int returnValue = {
+            r / rhs,
+            g / rhs,
+            b / rhs,
+            a / rhs
+        };
+        return returnValue;
+    }
+
+    uint32_t toUint32() {
+        uint32_t r_ret = r; if (r_ret > 255) {r_ret = 255;}
+        uint32_t g_ret = g; if (g_ret > 255) {g_ret = 255;}
+        uint32_t b_ret = b; if (b_ret > 255) {b_ret = 255;}
+
+        return (r_ret) + (g_ret << 8) + (b_ret << 16);
+    }
+
+    void fromUint32(uint32_t color) {
+        r = color & 0xFF;
+        g = (color >> 8) & 0xFF;
+        b = (color >> 16) & 0xFF;
+    }
+};
+
 struct Color_Float {
     float r;
     float b;

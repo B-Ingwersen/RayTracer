@@ -23,6 +23,7 @@ using namespace std;
 #include "Ray.h"
 #include "Lens.h"
 #include "Renderer.h"
+#include "PostProcessing.h"
 
 int main(int argc, char ** args) {
     graphical_init();
@@ -71,6 +72,7 @@ int main(int argc, char ** args) {
 	// END TEST SCENE OBJECT
 
     uint32_t * buffer = renderer_renderScene(&scene, graphical_data.windowWidth, graphical_data.windowHeight);
+    postProcessing_3x3GuassianBlur(buffer, graphical_data.windowWidth, graphical_data.windowHeight);
     graphical_display(buffer);
 
     graphical_wait();
