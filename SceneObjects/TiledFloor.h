@@ -1,11 +1,11 @@
 
 struct TileFloor_SceneObjectData {
-    Objects_Plane plane;
+    RTTypesPlane plane;
     float reflection;
     Color_Float color;
 };
 
-bool tileFloor_intersectHCyl(Objects_Vector * IntersectOut, float Y1, float Z1, float R, Objects_Ray * ray) {
+bool tileFloor_intersectHCyl(RTTypesVector * IntersectOut, float Y1, float Z1, float R, RTTypesRay * ray) {
 	float x1 = ray -> point.x;
 	float y1 = ray -> point.y;
 	float z1 = ray -> point.z;
@@ -35,7 +35,7 @@ bool tileFloor_intersectHCyl(Objects_Vector * IntersectOut, float Y1, float Z1, 
 	}
 }
 
-bool tileFloor_intersectWCyl(Objects_Vector * IntersectOut, float X1, float Z1, float R, Objects_Ray * ray) {
+bool tileFloor_intersectWCyl(RTTypesVector * IntersectOut, float X1, float Z1, float R, RTTypesRay * ray) {
 	float x1 = ray -> point.x;
 	float y1 = ray -> point.y;
 	float z1 = ray -> point.z;
@@ -65,9 +65,9 @@ bool tileFloor_intersectWCyl(Objects_Vector * IntersectOut, float X1, float Z1, 
 	}
 }
 
-int tileFloor_getAllIntersect(void * objectDataRaw, Objects_Ray * ray, Objects_Vector * IntersectOut, Objects_Vector * NormalVecOut) {
+int tileFloor_getAllIntersect(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * IntersectOut, RTTypesVector * NormalVecOut) {
     TileFloor_SceneObjectData * objectData = (TileFloor_SceneObjectData *)objectDataRaw;
-    Objects_Plane * plane = &(objectData -> plane);
+    RTTypesPlane * plane = &(objectData -> plane);
 
 	float t = (plane -> d - plane -> normalVector.dot(ray -> point)) / plane -> normalVector.dot(ray -> direction);
 
@@ -93,7 +93,7 @@ int tileFloor_getAllIntersect(void * objectDataRaw, Objects_Ray * ray, Objects_V
 	else {
 		if (H <= GapWidth || H >= (TileWidth - GapWidth)) { //determine if within GapWidth of grid lines		
 			//float edgeIntersects[6];
-			Objects_Vector edgeIntersects[2];
+			RTTypesVector edgeIntersects[2];
 			bool intersect = tileFloor_intersectHCyl(edgeIntersects, Hloc - GapWidth, plane -> d - lipRadius, lipRadius, ray);//intersect cylinder parallel to x axis
 			if (intersect) {
 				if (edgeIntersects[0].y >= Hloc - GapWidth && edgeIntersects[0].z >= plane -> d - lipRadius) {//checks 1st intersect to be in quarter of cylinder that is visible
@@ -146,7 +146,7 @@ int tileFloor_getAllIntersect(void * objectDataRaw, Objects_Ray * ray, Objects_V
 			}
 		}
 	
-		Objects_Vector edgeIntersects[2];
+		RTTypesVector edgeIntersects[2];
 		bool intersect = tileFloor_intersectWCyl(edgeIntersects, Wloc - GapWidth, plane -> d - lipRadius, lipRadius, ray);
 		if (intersect) {
 			if (edgeIntersects[0].x >= Wloc - GapWidth && edgeIntersects[0].z >= plane -> d - lipRadius) {
@@ -203,9 +203,9 @@ int tileFloor_getAllIntersect(void * objectDataRaw, Objects_Ray * ray, Objects_V
 	return numOfIntersects;
 }
 
-bool tileFloor_getIntersect(void * objectDataRaw, Objects_Ray * ray, Objects_Vector * returnPoint, Objects_Vector * returnNormal) {
-	Objects_Vector tileIntersects[8];
-	Objects_Vector tileNormVecs[8];
+bool tileFloor_getIntersect(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
+	RTTypesVector tileIntersects[8];
+	RTTypesVector tileNormVecs[8];
 
 	int numOfIntersects = tileFloor_getAllIntersect(objectDataRaw, ray, tileIntersects, tileNormVecs);
 	int j = 0;
@@ -231,9 +231,9 @@ bool tileFloor_getIntersect(void * objectDataRaw, Objects_Ray * ray, Objects_Vec
 	return foundIntersect;
 }
 
-bool tileFloor_getIntersectNoSelf(void * objectDataRaw, Objects_Ray * ray, Objects_Vector * returnPoint, Objects_Vector * returnNormal) {
-	Objects_Vector tileIntersects[8];
-	Objects_Vector tileNormVecs[8];
+bool tileFloor_getIntersectNoSelf(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
+	RTTypesVector tileIntersects[8];
+	RTTypesVector tileNormVecs[8];
 
 	int numOfIntersects = tileFloor_getAllIntersect(objectDataRaw, ray, tileIntersects, tileNormVecs);
 	int j = 0;
@@ -275,7 +275,7 @@ bool tileFloor_getIntersectNoSelf(void * objectDataRaw, Objects_Ray * ray, Objec
 	return foundIntersect;
 }
 
-void tileFloor_getColor(void * objectDataRaw, Objects_Vector * point, Color_Float * returnColor, float * returnReflection) {
+void tileFloor_getColor(void * objectDataRaw, RTTypesVector * point, Color_Float * returnColor, float * returnReflection) {
     TileFloor_SceneObjectData * objectData = (TileFloor_SceneObjectData *)objectDataRaw;
 
     *returnColor = objectData -> color;

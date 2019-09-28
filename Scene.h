@@ -1,8 +1,8 @@
 struct Scene_ObjectType {
     const char * name;
-    bool (*getIntersect)(void * objectData, Objects_Ray * ray, Objects_Vector * returnPoint, Objects_Vector * returnNormal);
-    bool (*getIntersectNoSelf)(void * objectData, Objects_Ray * ray, Objects_Vector * returnPoint, Objects_Vector * returnNormal);
-    void (*getColor)(void * objectData, Objects_Vector * point, Color_Float * returnColor, float * returnReflection);
+    bool (*getIntersect)(void * objectData, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal);
+    bool (*getIntersectNoSelf)(void * objectData, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal);
+    void (*getColor)(void * objectData, RTTypesVector * point, Color_Float * returnColor, float * returnReflection);
 };
 
 #include "SceneObjects/Plane.h"
@@ -14,12 +14,12 @@ struct Scene_Descriptor {
     Scene_ObjectType * objectsType;
     void ** objectsData;
 
-    bool intersectRay(Objects_Ray * ray, Objects_Vector * returnPoint, Objects_Vector * returnNormal, Color_Float * returnColor, float * returnReflection, int ignoreIndex, int * returnIndex) {
+    bool intersectRay(RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal, Color_Float * returnColor, float * returnReflection, int ignoreIndex, int * returnIndex) {
         int index;
 
         *returnIndex = -1;
-        Objects_Vector point;
-        Objects_Vector normal;
+        RTTypesVector point;
+        RTTypesVector normal;
         float minDistance = FLT_MAX;
         for (index = 0; index < nObjects; index++) {
             bool intersect;
@@ -31,7 +31,7 @@ struct Scene_Descriptor {
             }
 
             if (intersect) {
-                Objects_Vector diff = point - ray -> point;
+                RTTypesVector diff = point - ray -> point;
                 if (diff.dot(ray -> direction) < 0) {
                     continue;
                 }

@@ -1,12 +1,12 @@
 struct Sphere_SceneObjectData {
-    Objects_Sphere sphere;
+    RTTypesSphere sphere;
     float reflection;
     Color_Float color;
 };
 
-bool sphere_getIntersect(void * objectDataRaw, Objects_Ray * ray, Objects_Vector * returnPoint, Objects_Vector * returnNormal) {
+bool sphere_getIntersect(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
     Sphere_SceneObjectData * objectData = (Sphere_SceneObjectData *)objectDataRaw;
-    Objects_Sphere * sphere = &(objectData -> sphere);
+    RTTypesSphere * sphere = &(objectData -> sphere);
 
 	//A,B, and C are defined as the coefficients of a quadratic formula for the intersection of the ray and the sphere
 	float A = (ray -> direction).dot(ray -> direction);
@@ -38,12 +38,12 @@ bool sphere_getIntersect(void * objectDataRaw, Objects_Ray * ray, Objects_Vector
 	}
 }
 
-bool sphere_getIntersectNoSelf(void * objectDataRaw, Objects_Ray * ray, Objects_Vector * returnPoint, Objects_Vector * returnNormal) {
+bool sphere_getIntersectNoSelf(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
     Sphere_SceneObjectData * objectData = (Sphere_SceneObjectData *)objectDataRaw;
-    Objects_Sphere * sphere = &(objectData -> sphere);
+    RTTypesSphere * sphere = &(objectData -> sphere);
 
     // quick test for no intersection
-    Objects_Vector normalVector = ray -> point - sphere -> center;
+    RTTypesVector normalVector = ray -> point - sphere -> center;
 	float dotProduct = normalVector.dot(ray -> direction);
 	if (dotProduct >= 0) {
 		return false;
@@ -80,7 +80,7 @@ bool sphere_getIntersectNoSelf(void * objectDataRaw, Objects_Ray * ray, Objects_
 	}
 }
 
-void sphere_getColor(void * objectDataRaw, Objects_Vector * point, Color_Float * returnColor, float * returnReflection) {
+void sphere_getColor(void * objectDataRaw, RTTypesVector * point, Color_Float * returnColor, float * returnReflection) {
     Sphere_SceneObjectData * objectData = (Sphere_SceneObjectData *)objectDataRaw;
 
     *returnColor = objectData -> color;

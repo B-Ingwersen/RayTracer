@@ -1,4 +1,4 @@
-bool intersectSphereRay(Objects_Vector * intersect, Objects_Sphere * sphere, Objects_Ray * ray) {
+bool intersectSphereRay(RTTypesVector * intersect, RTTypesSphere * sphere, RTTypesRay * ray) {
 	float x1 = ray -> point.x;
 	float y1 = ray -> point.y;
 	float z1 = ray -> point.z;
@@ -44,31 +44,54 @@ bool intersectSphereRay(Objects_Vector * intersect, Objects_Sphere * sphere, Obj
 	}
 }
 
-void intersectPlaneRay(Objects_Vector * IntersectOut, Objects_Plane * plane, Objects_Ray * ray) {
+void intersectPlaneRay(RTTypesVector * IntersectOut, RTTypesPlane * plane, RTTypesRay * ray) {
 	float t = ( plane -> d - plane -> normalVector.dot(ray -> point) ) / plane -> normalVector.dot(ray -> direction);
 	*IntersectOut = ray -> point + ray -> direction * t;
 }
 
-void findReflectedRay(Objects_Ray * OutputRay, Objects_Ray * ray, Objects_Vector * reflPoint, Objects_Vector * normalVec) {
+void findReflectedRay(RTTypesRay * OutputRay, RTTypesRay * ray, RTTypesVector * reflPoint, RTTypesVector * normalVec) {
 
-	Objects_Plane reflectionPlane;
+	RTTypesPlane reflectionPlane;
 	reflectionPlane.normalVector = *normalVec;
 	reflectionPlane.d = normalVec -> dot(*reflPoint + *normalVec);
 
-	Objects_Vector newInt;
+	RTTypesVector newInt;
 	intersectPlaneRay(&newInt, &reflectionPlane, ray);
 
-	Objects_Vector newPoint = (*reflPoint + *normalVec) * 2.0 - newInt;
+	RTTypesVector newPoint = (*reflPoint + *normalVec) * 2.0 - newInt;
 
 	(*OutputRay).createFromPoints(reflPoint, &newPoint);
 }
 
-void traceRay(Objects_Ray * ray, int recursionLevel, Color * returnColor, Scene_Descriptor * scene, int ignoreObject) {
-	Objects_Vector light = { 2,1,.75 };
+void refractRay(RTTypesVector * ray, RTTypesVector * normal, float indexRatio, RTTypesVector * returnRay) {
+	if (ray -> dot(*normal) < 0) {
+		normal -> invert();
+	}
+	float r = ray -> abs();
+	float k = normal -> abs();
+	float theta1 = normal -> angleBetween(*ray);
+	float theta2 = theta1 * indexRatio;
+
+	float ratio1;
+	if (fabs(theta1) > 0.05) {
+		ratio1 = sin(theta2) / sin(theta1);
+	}
+	else {
+		// 3rd degree Taylor approximation of sin(theta1 * indexRatio) / sin(theta1) for theta1 close to zero
+		ratio1 = indexRatio + theta1 * theta1 * (indexRatio - indexRatio * indexRatio * indexRatio) / 6.0;
+	}
+
+	float a1 = r / k * (cos(theta2) - cos(theta1) * ratio1);
+	float a2 = ratio1;
+	*returnRay = *normal * a1 + *ray * a2;
+}
+
+void traceRay(RTTypesRay * ray, int recursionLevel, Color * returnColor, Scene_Descriptor * scene, int ignoreObject) {
+	RTTypesVector light = { 2,1,.75 };
 	*returnColor = {200, 200, 255, 0};
 
-	Objects_Vector point;
-	Objects_Vector normal;
+	RTTypesVector point;
+	RTTypesVector normal;
 	Color_Float color;
 	float reflection;
 	int objectIndex;
@@ -78,11 +101,11 @@ void traceRay(Objects_Ray * ray, int recursionLevel, Color * returnColor, Scene_
 	if (intersect) {
 		float scaleColor = 50;
 
-		Objects_Ray pathToLight;
+		RTTypesRay pathToLight;
 		pathToLight.createFromPoints(&point, &light);
 
-		Objects_Vector lightIntersect;
-		Objects_Vector unused2;
+		RTTypesVector lightIntersect;
+		RTTypesVector unused2;
 		Color_Float unused3;
 		float unused4;
 		int unused5;
@@ -97,7 +120,7 @@ void traceRay(Objects_Ray * ray, int recursionLevel, Color * returnColor, Scene_
 
 		color *= scaleColor;
 
-		Objects_Ray reflectedRay;
+		RTTypesRay reflectedRay;
 		findReflectedRay(&reflectedRay, ray, &point, &normal);
 
 		if (recursionLevel > 0) {
@@ -112,8 +135,8 @@ void traceRay(Objects_Ray * ray, int recursionLevel, Color * returnColor, Scene_
 		}
 
 		if (!clearPathToLight) {
-			Objects_Plane lightPlane = {light, light.dot(light)};
-			Objects_Vector lightPlaneIntersect;
+			RTTypesPlane lightPlane = {light, light.dot(light)};
+			RTTypesVector lightPlaneIntersect;
 			intersectPlaneRay(&lightPlaneIntersect, &lightPlane, &reflectedRay);
 			float distance = light.dist(lightPlaneIntersect);
 			if (distance < 1) {
