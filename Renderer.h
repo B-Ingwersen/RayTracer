@@ -22,7 +22,7 @@ void renderer_lensRender(Renderer_Job * job, int pixelX, int pixelY) {
 		float( -(job -> windowHeight - 2 * (double)(pixelY) )/ job -> windowWidth / 6 )
 	};
 
-	Color pixelColor = { 0,0,0,0 };
+	Color_Int pixelColor = { 0,0,0,0 };
 	int sample;
 	int iters = 1;
 	int numOfSamples = iters*iters;
@@ -42,7 +42,7 @@ void renderer_lensRender(Renderer_Job * job, int pixelX, int pixelY) {
 		job -> lens -> passRayThrough(&ray);
 		ray.point += *job -> camera;
 
-		Color RGBAColors;
+		Color_Int RGBAColors;
 		traceRay(&ray, 3, &RGBAColors, job -> scene, -1);
 
 		pixelColor += RGBAColors;
@@ -50,7 +50,7 @@ void renderer_lensRender(Renderer_Job * job, int pixelX, int pixelY) {
 
 	pixelColor /= numOfSamples;
 
-	job -> pixelBuffer[pixelY * job -> windowWidth + pixelX] = pixelColor.u32();
+	job -> pixelBuffer[pixelY * job -> windowWidth + pixelX] = pixelColor.toUint32();
 }
 
 void renderer_executionThread(void * jobVoidPtr) {
@@ -82,7 +82,10 @@ uint32_t * renderer_renderScene(Scene_Descriptor * scene, int pixelWidth, int pi
 		{ -float(.4), 0, 0, 0.5 },
 		1.5
 	};
-	float focalDistance = .598;
+	//float focalDistance = .598;
+	float objectDistance = 4;
+	float inverseFocalLength = (lens.glassN - 1)*(1 / lens.sphere1.r + 1 / lens.sphere2.r - (lens.glassN - 1)*0.2 / (lens.glassN*lens.sphere1.r*lens.sphere2.r));
+	float focalDistance = 1 / (inverseFocalLength - 1 / objectDistance);
     RTTypesVector camera = {5, 0, 0};
 
 	Renderer_Job job = {

@@ -121,19 +121,31 @@ struct Color_Int {
         };
         return returnValue;
     }
+    void operator+=(const Color_Int& rhs) {
+        r += rhs.r;
+        b += rhs.b;
+        g += rhs.g;
+        a += rhs.a;
+    }
+    void operator/=(const int& rhs) {
+        r /= rhs;
+        b /= rhs;
+        g /= rhs;
+        a /= rhs;
+    }
 
     uint32_t toUint32() {
         uint32_t r_ret = r; if (r_ret > 255) {r_ret = 255;}
         uint32_t g_ret = g; if (g_ret > 255) {g_ret = 255;}
         uint32_t b_ret = b; if (b_ret > 255) {b_ret = 255;}
 
-        return (r_ret) + (g_ret << 8) + (b_ret << 16);
+        return (r_ret << 16) + (g_ret << 8) + (b_ret);
     }
 
     void fromUint32(uint32_t color) {
-        r = color & 0xFF;
+        r = (color >> 16) & 0xFF;
         g = (color >> 8) & 0xFF;
-        b = (color >> 16) & 0xFF;
+        b = color & 0xFF;
     }
 };
 

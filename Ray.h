@@ -86,7 +86,7 @@ void refractRay(RTTypesVector * ray, RTTypesVector * normal, float indexRatio, R
 	*returnRay = *normal * a1 + *ray * a2;
 }
 
-void traceRay(RTTypesRay * ray, int recursionLevel, Color * returnColor, Scene_Descriptor * scene, int ignoreObject) {
+void traceRay(RTTypesRay * ray, int recursionLevel, Color_Int * returnColor, Scene_Descriptor * scene, int ignoreObject) {
 	*returnColor = {200, 200, 255, 0};
 
 	RTTypesVector point;
@@ -123,7 +123,7 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color * returnColor, Scene_D
 		findReflectedRay(&reflectedRay, ray, &point, &normal);
 
 		if (recursionLevel > 0) {
-			Color reflectedColor;
+			Color_Int reflectedColor;
 			traceRay(&reflectedRay, recursionLevel - 1, &reflectedColor, scene, objectIndex);
 
 			float matte = 1.0 - reflection;
@@ -149,8 +149,8 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color * returnColor, Scene_D
 		if (color.r > 255) {color.r = 255;}
 		if (color.g > 255) {color.g = 255;}
 		if (color.b > 255) {color.b = 255;}
-		returnColor -> r = (uint8_t)color.r;
-		returnColor -> g = (uint8_t)color.g;
-		returnColor -> b = (uint8_t)color.b;
+		returnColor -> r = (uint32_t)color.r;
+		returnColor -> g = (uint32_t)color.g;
+		returnColor -> b = (uint32_t)color.b;
 	}
 }
