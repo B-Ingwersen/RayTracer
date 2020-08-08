@@ -1,11 +1,7 @@
+#include "Graphical.h"
+#include <iostream>
 
-struct {
-    int windowWidth;
-    int windowHeight;
-    SDL_Window * sdlWindow;
-    SDL_Surface * sdlSurface;
-    uint32_t * frameBuffer;
-} graphical_data = {
+Graphical_Data graphical_data = {
     1600,
     900,
     NULL,
@@ -23,18 +19,21 @@ void graphical_init() {
         SDL_WINDOW_RESIZABLE);
     
     if (graphical_data.sdlWindow == NULL) {
-        cout << "SDL Initialization Error: " << SDL_GetError() << endl;
+        std::cout << "SDL Initialization Error: " << SDL_GetError()
+            << std::endl;
         abort();
     }
 
-    graphical_data.sdlSurface = SDL_GetWindowSurface( graphical_data.sdlWindow );
-    graphical_data.frameBuffer = (uint32_t *)graphical_data.sdlSurface -> pixels;
+    graphical_data.sdlSurface = SDL_GetWindowSurface(graphical_data.sdlWindow);
+    graphical_data.frameBuffer =
+        (uint32_t *)graphical_data.sdlSurface -> pixels;
 }
 
 void graphical_display(uint32_t * pixelData) {
     SDL_LockSurface(graphical_data.sdlSurface);
 
-    memcpy(graphical_data.frameBuffer, pixelData, graphical_data.windowHeight * graphical_data.windowWidth * sizeof(uint32_t));
+    memcpy(graphical_data.frameBuffer, pixelData, graphical_data.windowHeight
+        * graphical_data.windowWidth * sizeof(uint32_t));
 
     SDL_UnlockSurface(graphical_data.sdlSurface);
     SDL_UpdateWindowSurface(graphical_data.sdlWindow);

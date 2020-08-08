@@ -1,4 +1,8 @@
-bool intersectSphereRay(RTTypesVector * intersect, RTTypesSphere * sphere, RTTypesRay * ray) {
+#include "Ray.h"
+
+bool intersectSphereRay(RTTypesVector * intersect, RTTypesSphere * sphere,
+	RTTypesRay * ray) {
+
 	float x1 = ray -> point.x;
 	float y1 = ray -> point.y;
 	float z1 = ray -> point.z;
@@ -11,15 +15,17 @@ bool intersectSphereRay(RTTypesVector * intersect, RTTypesSphere * sphere, RTTyp
 	float Z1 = sphere -> center.z;
 	float R = sphere -> r;
 
-	//A,B, and C are defined as the coefficients of a quadratic formula for the intersection of the ray and the sphere
-	//float A = X*X + Y*Y + Z*Z;
+	//A,B, and C are defined as the coefficients of a quadratic formula for the
+	// intersection of the ray and the sphere
 	float A = (ray -> direction).dot(ray -> direction);
-	//float B = 2 * (X*x1 + Y*y1 + Z*z1 - X*X1 - Y*Y1 - Z*Z1);
-	float B = 2 * ( (ray -> direction).dot(ray -> point) - (ray -> direction).dot(sphere -> center) );
-	//float C = X1*X1 + x1*x1 + Y1*Y1 + y1*y1 + Z1*Z1 + z1*z1 - 2 * X1*x1 - 2 * Y1*y1 - 2 * Z1*z1 - R*R;
-	float C = (sphere -> center).dot(sphere -> center) + (ray -> point).dot(ray -> point) - 2 * (sphere -> center).dot(ray -> point) - R*R;
+	float B = 2 * ( (ray -> direction).dot(ray -> point)
+		- (ray -> direction).dot(sphere -> center) );
+	float C = (sphere -> center).dot(sphere -> center)
+		+ (ray -> point).dot(ray -> point)
+		- 2 * (sphere -> center).dot(ray -> point) - R*R;
 	float det = B*B - 4 * A*C;
-	//The determinant of the quad form is checked; negative result means that the objects don't intersect and this step is skipped
+	//The determinant of the quad form is checked; negative result means that
+	// the objects don't intersect and this step is skipped
 	if (det >= 0) {
 		det = sqrt(det);
 		float t1 = (-B + det) / (2 * A);
@@ -44,12 +50,16 @@ bool intersectSphereRay(RTTypesVector * intersect, RTTypesSphere * sphere, RTTyp
 	}
 }
 
-void intersectPlaneRay(RTTypesVector * IntersectOut, RTTypesPlane * plane, RTTypesRay * ray) {
-	float t = ( plane -> d - plane -> normalVector.dot(ray -> point) ) / plane -> normalVector.dot(ray -> direction);
+void intersectPlaneRay(RTTypesVector * IntersectOut, RTTypesPlane * plane,
+	RTTypesRay * ray) {
+	
+	float t = ( plane -> d - plane -> normalVector.dot(ray -> point) )
+		/ plane -> normalVector.dot(ray -> direction);
 	*IntersectOut = ray -> point + ray -> direction * t;
 }
 
-void findReflectedRay(RTTypesRay * OutputRay, RTTypesRay * ray, RTTypesVector * reflPoint, RTTypesVector * normalVec) {
+void findReflectedRay(RTTypesRay * OutputRay, RTTypesRay * ray,
+	RTTypesVector * reflPoint, RTTypesVector * normalVec) {
 
 	RTTypesPlane reflectionPlane;
 	reflectionPlane.normalVector = *normalVec;
@@ -63,7 +73,9 @@ void findReflectedRay(RTTypesRay * OutputRay, RTTypesRay * ray, RTTypesVector * 
 	(*OutputRay).createFromPoints(reflPoint, &newPoint);
 }
 
-void refractRay(RTTypesVector * ray, RTTypesVector * normal, float indexRatio, RTTypesVector * returnRay) {
+void refractRay(RTTypesVector * ray, RTTypesVector * normal, float indexRatio,
+	RTTypesVector * returnRay) {
+	
 	if (ray -> dot(*normal) < 0) {
 		normal -> invert();
 	}
@@ -77,8 +89,10 @@ void refractRay(RTTypesVector * ray, RTTypesVector * normal, float indexRatio, R
 		ratio1 = sin(theta2) / sin(theta1);
 	}
 	else {
-		// 3rd degree Taylor approximation of sin(theta1 * indexRatio) / sin(theta1) for theta1 close to zero
-		ratio1 = indexRatio + theta1 * theta1 * (indexRatio - indexRatio * indexRatio * indexRatio) / 6.0;
+		// 3rd degree Taylor approximation of
+		// sin(theta1 * indexRatio) / sin(theta1) for theta1 close to zero
+		ratio1 = indexRatio + theta1 * theta1
+			* (indexRatio - indexRatio * indexRatio * indexRatio) / 6.0;
 	}
 
 	float a1 = r / k * (cos(theta2) - cos(theta1) * ratio1);
@@ -86,7 +100,9 @@ void refractRay(RTTypesVector * ray, RTTypesVector * normal, float indexRatio, R
 	*returnRay = *normal * a1 + *ray * a2;
 }
 
-void traceRay(RTTypesRay * ray, int recursionLevel, Color_Int * returnColor, Scene_Descriptor * scene, int ignoreObject) {
+void traceRay(RTTypesRay * ray, int recursionLevel, Color_Int * returnColor,
+	Scene_Descriptor * scene, int ignoreObject) {
+	
 	*returnColor = {200, 200, 255, 0};
 
 	RTTypesVector point;
@@ -95,7 +111,8 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color_Int * returnColor, Sce
 	float reflection;
 	int objectIndex;
 
-	bool intersect = scene -> intersectRay(ray, &point, &normal, &color, &reflection, ignoreObject, &objectIndex);
+	bool intersect = scene -> intersectRay(ray, &point, &normal, &color,
+		&reflection, ignoreObject, &objectIndex);
 
 	if (intersect) {
 		float scaleColor = 50;
@@ -109,12 +126,17 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color_Int * returnColor, Sce
 		float unused4;
 		int unused5;
 
-		bool clearPathToLight = scene -> intersectRay(&pathToLight, &lightIntersect, &unused2, &unused3, &unused4, objectIndex, &unused5);
-		if (clearPathToLight && pathToLight.point.dist(lightIntersect) > pathToLight.point.dist(*scene -> light)) {
+		bool clearPathToLight = scene -> intersectRay(&pathToLight,
+			&lightIntersect, &unused2, &unused3, &unused4, objectIndex,
+			&unused5);
+		if (clearPathToLight && pathToLight.point.dist(lightIntersect)
+			> pathToLight.point.dist(*scene -> light)) {
+			
 			clearPathToLight = false;
 		}
 		if (!clearPathToLight) {
-			scaleColor += 200 * fabs( normal.cosineOfAngleBetween(pathToLight.direction) );
+			scaleColor += 200
+				* fabs(normal.cosineOfAngleBetween(pathToLight.direction) );
 		}
 
 		color *= scaleColor;
@@ -124,7 +146,8 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color_Int * returnColor, Sce
 
 		if (recursionLevel > 0) {
 			Color_Int reflectedColor;
-			traceRay(&reflectedRay, recursionLevel - 1, &reflectedColor, scene, objectIndex);
+			traceRay(&reflectedRay, recursionLevel - 1, &reflectedColor, scene,
+				objectIndex);
 
 			float matte = 1.0 - reflection;
 			color *= matte;
@@ -134,7 +157,10 @@ void traceRay(RTTypesRay * ray, int recursionLevel, Color_Int * returnColor, Sce
 		}
 
 		if (!clearPathToLight) {
-			RTTypesPlane lightPlane = { *scene -> light, (scene -> light) -> dot(*scene -> light) };
+			RTTypesPlane lightPlane = {
+				*scene -> light,
+				(scene -> light) -> dot(*scene -> light)
+			};
 			RTTypesVector lightPlaneIntersect;
 			intersectPlaneRay(&lightPlaneIntersect, &lightPlane, &reflectedRay);
 			float distance = scene -> light -> dist(lightPlaneIntersect);

@@ -1,25 +1,14 @@
-#define nExecutionThreads 8
-
-struct Renderer_Job {
-	Scene_Descriptor * scene;
-	uint32_t * pixelBuffer;
-	int windowWidth;
-	int windowHeight;
-	volatile int pixelJobIndex;
-
-	RTTypesVector * camera;
-    Lens_Descriptor * lens;
-	float focalDistance;
-
-	mutex lock;
-};
+#include "Renderer.h"
+#include "Ray.h"
+#include <thread>
 
 void renderer_lensRender(Renderer_Job * job, int pixelX, int pixelY) {
 
 	RTTypesVector sensorLocation = {
 		job -> focalDistance,
 		float( -(2 * (double)(pixelX) / job -> windowWidth - 1) / 6 ),
-		float( -(job -> windowHeight - 2 * (double)(pixelY) )/ job -> windowWidth / 6 )
+		float( -(job -> windowHeight - 2 * (double)(pixelY) )
+			/ job -> windowWidth / 6 )
 	};
 
 	Color_Int pixelColor = { 0,0,0,0 };
@@ -50,7 +39,8 @@ void renderer_lensRender(Renderer_Job * job, int pixelX, int pixelY) {
 
 	pixelColor /= numOfSamples;
 
-	job -> pixelBuffer[pixelY * job -> windowWidth + pixelX] = pixelColor.toUint32();
+	job -> pixelBuffer[pixelY * job -> windowWidth + pixelX]
+		= pixelColor.toUint32();
 }
 
 void renderer_executionThread(void * jobVoidPtr) {
@@ -74,7 +64,9 @@ void renderer_executionThread(void * jobVoidPtr) {
 	}
 }
 
-uint32_t * renderer_renderScene(Scene_Descriptor * scene, int pixelWidth, int pixelHeight) {
+uint32_t * renderer_renderScene(Scene_Descriptor * scene, int pixelWidth,
+	int pixelHeight) {
+	
     uint32_t * buffer = new uint32_t[pixelWidth * pixelHeight];
 	
 	Lens_Descriptor lens = {
@@ -84,7 +76,9 @@ uint32_t * renderer_renderScene(Scene_Descriptor * scene, int pixelWidth, int pi
 	};
 	//float focalDistance = .598;
 	float objectDistance = 4;
-	float inverseFocalLength = (lens.glassN - 1)*(1 / lens.sphere1.r + 1 / lens.sphere2.r - (lens.glassN - 1)*0.2 / (lens.glassN*lens.sphere1.r*lens.sphere2.r));
+	float inverseFocalLength = (lens.glassN - 1) 
+		* (1 / lens.sphere1.r + 1 / lens.sphere2.r - (lens.glassN - 1)*0.2 /
+		(lens.glassN*lens.sphere1.r*lens.sphere2.r));
 	float focalDistance = 1 / (inverseFocalLength - 1 / objectDistance);
     RTTypesVector camera = {5, 0, 0};
 
@@ -101,10 +95,11 @@ uint32_t * renderer_renderScene(Scene_Descriptor * scene, int pixelWidth, int pi
 	};
 	job.lock.unlock();
 
-	thread executionThreads[nExecutionThreads];
+	std::thread executionThreads[nExecutionThreads];
 	int threadNumber;
 	for (threadNumber = 0; threadNumber < nExecutionThreads; threadNumber++) {
-		executionThreads[threadNumber] = thread(renderer_executionThread, &job);
+		executionThreads[threadNumber] =
+			std::thread(renderer_executionThread, &job);
 	}
 	for (threadNumber = 0; threadNumber < nExecutionThreads; threadNumber++) {
 		executionThreads[threadNumber].join();

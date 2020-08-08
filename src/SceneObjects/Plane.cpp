@@ -1,11 +1,9 @@
+#include "SceneObjects.h"
+#include "Scene.h"
 
-struct Plane_SceneObjectData {
-    RTTypesPlane plane;
-    float reflection;
-    Color_Float color;
-};
-
-bool plane_getIntersect(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
+bool plane_getIntersect(void * objectDataRaw, RTTypesRay * ray,
+    RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
+    
     Plane_SceneObjectData * objectData = (Plane_SceneObjectData *)objectDataRaw;
 
     RTTypesPlane * plane = &(objectData -> plane);
@@ -13,17 +11,22 @@ bool plane_getIntersect(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * 
     if (tDenominator == 0) {
         return false;
     }
-	float t = ( plane -> d - plane -> normalVector.dot(ray -> point) ) / tDenominator;
+	float t = ( plane -> d - plane -> normalVector.dot(ray -> point) )
+        / tDenominator;
 	*returnPoint = ray -> point + ray -> direction * t;
     *returnNormal = objectData -> plane.normalVector;
     return true;
 }
 
-bool plane_getIntersectNoSelf(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
+bool plane_getIntersectNoSelf(void * objectDataRaw, RTTypesRay * ray,
+    RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
+
     return false;
 }
 
-void plane_getColor(void * objectDataRaw, RTTypesVector * point, Color_Float * returnColor, float * returnReflection) {
+void plane_getColor(void * objectDataRaw, RTTypesVector * point,
+    Color_Float * returnColor, float * returnReflection) {
+    
     Plane_SceneObjectData * objectData = (Plane_SceneObjectData *)objectDataRaw;
 
     *returnColor = objectData -> color;

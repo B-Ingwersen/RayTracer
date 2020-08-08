@@ -8,7 +8,7 @@
         Note: On some desktop environments & graphics cards, SDL2 software rendering can be a bit buggy
 */
 
-#include "SDL2/SDL.h"
+/*#include "SDL2/SDL.h"
 #include <iostream>
 #include <math.h>
 #include <cfloat>
@@ -17,16 +17,24 @@
 #include <thread>
 #include <mutex>
 
-using namespace std;
+using namespace std;*/
 
+#include "RTTypes.h"
+#include "Scene.h"
+#include "SceneObjects.h"
+#include "Ray.h"
+#include "Lens.h"
 #include "Graphical.h"
+#include "Renderer.h"
+#include "PostProcessing.h"
+
+/*#include "Graphical.h"
 #include "RTTypes.h"
 #include "Scene.h"
 #include "Ray.h"
 #include "Lens.h"
 #include "Renderer.h"
-#include "PostProcessing.h"
-
+#include "PostProcessing.h"*/
 int main(int argc, char ** args) {
     graphical_init();
 

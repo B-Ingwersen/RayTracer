@@ -1,17 +1,21 @@
-struct Sphere_SceneObjectData {
-    RTTypesSphere sphere;
-    float reflection;
-    Color_Float color;
-};
+#include "SceneObjects.h"
+#include "Scene.h"
 
-bool sphere_getIntersect(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
-    Sphere_SceneObjectData * objectData = (Sphere_SceneObjectData *)objectDataRaw;
+bool sphere_getIntersect(void * objectDataRaw, RTTypesRay * ray,
+	RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
+	
+    Sphere_SceneObjectData * objectData =
+		(Sphere_SceneObjectData *)objectDataRaw;
     RTTypesSphere * sphere = &(objectData -> sphere);
 
-	//A,B, and C are defined as the coefficients of a quadratic formula for the intersection of the ray and the sphere
+	//A,B, and C are defined as the coefficients of a quadratic formula for the
+	//intersection of the ray and the sphere
 	float A = (ray -> direction).dot(ray -> direction);
-	float B = 2 * ( (ray -> direction).dot(ray -> point) - (ray -> direction).dot(sphere -> center) );
-	float C = (sphere -> center).dot(sphere -> center) + (ray -> point).dot(ray -> point) - 2 * (sphere -> center).dot(ray -> point) - sphere -> r * sphere -> r;
+	float B = 2 * ( (ray -> direction).dot(ray -> point)
+		- (ray -> direction).dot(sphere -> center) );
+	float C = (sphere -> center).dot(sphere -> center)
+		+ (ray -> point).dot(ray -> point)
+		- 2 * (sphere -> center).dot(ray -> point) - sphere -> r * sphere -> r;
 	float det = B*B - 4 * A*C;
     
 	if (det >= 0) {
@@ -38,8 +42,11 @@ bool sphere_getIntersect(void * objectDataRaw, RTTypesRay * ray, RTTypesVector *
 	}
 }
 
-bool sphere_getIntersectNoSelf(void * objectDataRaw, RTTypesRay * ray, RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
-    Sphere_SceneObjectData * objectData = (Sphere_SceneObjectData *)objectDataRaw;
+bool sphere_getIntersectNoSelf(void * objectDataRaw, RTTypesRay * ray,
+	RTTypesVector * returnPoint, RTTypesVector * returnNormal) {
+	
+    Sphere_SceneObjectData * objectData =
+		(Sphere_SceneObjectData *)objectDataRaw;
     RTTypesSphere * sphere = &(objectData -> sphere);
 
     // quick test for no intersection
@@ -49,10 +56,14 @@ bool sphere_getIntersectNoSelf(void * objectDataRaw, RTTypesRay * ray, RTTypesVe
 		return false;
 	}
 
-	//A,B, and C are defined as the coefficients of a quadratic formula for the intersection of the ray and the sphere
+	//A,B, and C are defined as the coefficients of a quadratic formula for the
+	//intersection of the ray and the sphere
 	float A = (ray -> direction).dot(ray -> direction);
-	float B = 2 * ( (ray -> direction).dot(ray -> point) - (ray -> direction).dot(sphere -> center) );
-	float C = (sphere -> center).dot(sphere -> center) + (ray -> point).dot(ray -> point) - 2 * (sphere -> center).dot(ray -> point) - sphere -> r * sphere -> r;
+	float B = 2 * ( (ray -> direction).dot(ray -> point)
+		- (ray -> direction).dot(sphere -> center) );
+	float C = (sphere -> center).dot(sphere -> center)
+		+ (ray -> point).dot(ray -> point)
+		- 2 * (sphere -> center).dot(ray -> point) - sphere -> r * sphere -> r;
 	float det = B*B - 4 * A*C;
     
 	if (det >= 0) {
@@ -80,8 +91,11 @@ bool sphere_getIntersectNoSelf(void * objectDataRaw, RTTypesRay * ray, RTTypesVe
 	}
 }
 
-void sphere_getColor(void * objectDataRaw, RTTypesVector * point, Color_Float * returnColor, float * returnReflection) {
-    Sphere_SceneObjectData * objectData = (Sphere_SceneObjectData *)objectDataRaw;
+void sphere_getColor(void * objectDataRaw, RTTypesVector * point,
+	Color_Float * returnColor, float * returnReflection) {
+	
+    Sphere_SceneObjectData * objectData =
+		(Sphere_SceneObjectData *)objectDataRaw;
 
     *returnColor = objectData -> color;
 	*returnReflection = objectData -> reflection;
