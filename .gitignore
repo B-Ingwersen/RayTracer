@@ -4,3 +4,4 @@
 a.out
 obj/*
 .vscode/*
+!Makefile
