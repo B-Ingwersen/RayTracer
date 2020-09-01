@@ -2,7 +2,7 @@
 
 A basic ray tracer implemented in C/C++ with SDL as a graphical backend
 
-![alt text](ExampleOutputs/example1.png "Example Output Image")
+![alt text](ExampleOutputs/background.png "Example Output Image")
 
 ## Building/Dependencies:
 
